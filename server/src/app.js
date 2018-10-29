@@ -59,8 +59,9 @@ app.put('/tasks/:id', (req, res) => {
   Task.findById(req.params.id, 'title category description', function (error, task) {
     if (error) { console.error(error); }
 
-    task.title = req.body.title
-    task.description = req.body.description
+    task.title = req.body.title;
+    task.category = req.body.category;
+    task.description = req.body.description;
     task.save(function (error) {
       if (error) {
         console.log(error)
