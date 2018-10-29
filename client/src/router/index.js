@@ -1,12 +1,11 @@
 import Vue from 'vue'
-const express = require('express');
 
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Tasks from '@/components/Tasks'
 import NewTask from '@/components/NewTask'
 import EditTask from '@/components/EditTask'
-
+Vue.use(Router)
 export default new Router({
   mode: 'history', // stops weird # in url
   routes: [
