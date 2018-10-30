@@ -5,7 +5,7 @@ export default {
     return Api().get('tasks')
   },
   addTask (params) {
-    return Api().task('tasks', params)
+    return Api().post('tasks', params)
   },
   updateTask (params) {
     return Api().put('tasks/' + params.id, params)

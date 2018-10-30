@@ -15,7 +15,7 @@ app.get('/tasks', (req, res) => {
   Task.find({}, 'title category description', function (error, tasks) {
     if (error) { console.error(error); }
     console.log(tasks);
-    res.send({
+    res.status(200).send({
       tasks: tasks
     })
   }).sort({_id:-1})
@@ -27,6 +27,22 @@ app.post('/tasks', (req, res) => {
   var title = req.body.title;
   var description = req.body.description;
   var category = req.body.category;
+  if(!req.body.title) {
+    return res.status(400).send({
+      success: 'false',
+      message: 'title is required'
+    });
+  }else if(!req.body.description) {
+    return res.status(400).send({
+      success: 'false',
+      message: 'description is required'
+    });
+  }else if(!req.body.category) {
+    return res.status(400).send({
+      success: 'false',
+      message: 'category is required'
+    });
+  }
   var new_task = new Task({
     title: title,
     category: category,
@@ -35,21 +51,32 @@ app.post('/tasks', (req, res) => {
   console.log(new_task)
   new_task.save(function (error) {
     if (error) {
-      console.log(error)
+      console.log(error);
+      return res.status(500).send({
+        success: 'false',
+        message: 'Database save error'
+      });
     }
     console.log(res)
-    res.send({
+    res.status(201).send({
       success: true,
       message: 'Task saved successfully!'
     })
   })
 })
+
 // Fetch single task
 app.get('/task/:id', (req, res) => {
   var db = req.db;
   Task.findById(req.params.id, 'title category description', function (error, task) {
-    if (error) { console.error(error); }
-    res.send(task)
+    if (error) {
+      console.error(error);
+      return res.status(404).send({
+        success: 'false',
+        message: 'task does not exist'
+      });
+     }
+    res.status(200).send(task)
   })
 })
 
@@ -57,13 +84,38 @@ app.get('/task/:id', (req, res) => {
 app.put('/tasks/:id', (req, res) => {
   var db = req.db;
   Task.findById(req.params.id, 'title category description', function (error, task) {
-    if (error) { console.error(error); }
-
-    task.title = req.body.title
-    task.description = req.body.description
+    if (error) {
+      console.error(error);
+      return res.status(404).send({
+        success: 'false',
+        message: 'task does not exist'
+      });
+    }else if(!req.body.title) {
+      return res.status(400).send({
+        success: 'false',
+        message: 'title is required'
+      });
+    }else if(!req.body.description) {
+      return res.status(400).send({
+        success: 'false',
+        message: 'description is required'
+      });
+    }else if(!req.body.category) {
+      return res.status(400).send({
+        success: 'false',
+        message: 'category is required'
+      });
+    }
+    task.title = req.body.title;
+    task.category = req.body.category;
+    task.description = req.body.description;
     task.save(function (error) {
       if (error) {
-        console.log(error)
+        console.log(error);
+        return res.status(500).send({
+          success: 'false',
+          message: 'Database save error'
+        });
       }
       res.send({
         success: true
@@ -78,9 +130,10 @@ app.delete('/tasks/:id', (req, res) => {
     _id: req.params.id
   }, function(err, task){
     if (err)
-      res.send(err)
-    res.send({
-      success: true
+      res.status(404).send(err)
+    res.status(200).send({
+      success: true,
+       message: 'Task deleted successfuly'
     })
   })
 })
